@@ -5,17 +5,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Home Page</title>
-
-
-  <!-- ----------------------------------------------------------------------------- -->
-  <!-- css -->
-
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous" />
   <link rel="stylesheet" href="/css/homePage.css" />
 </head>
 
 <body>
+  <!-- Navbar Starts Here -->
   <nav class="navbar navbar-expand-lg navbar-dark" id="navigation">
     <div class="container-fluid">
       <a href="/homePage">
@@ -29,103 +25,47 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/homePage">Home</a>
+            <a class="nav-link active" aria-current="page" href="/expense">Home</a>
           </li>
           <li class="nav-item">
-            <a id="reportsLink" class="nav-link active" aria-current="page" href="#" onclick="onClickAlert();">Reports
-              &#128081</a>
+            <a id="reportsLink" class="nav-link active" aria-current="page" href="#">Reports
+              &#128526</a>
           </li>
           <li class="nav-item">
-            <a id="leaderboardLink" class="nav-link active" aria-current="page" href="#"
-              onclick="onClickAlert();">LeaderBoard &#128081</a>
+            <a id="leaderboardLink" class="nav-link active" aria-current="page" href="#">LeaderBoard &#128526</a>
           </li>
         </ul>
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
           <button id="buyPremiumBtn" class="topBtn btn py-1" type="button" data-bs-toggle="tooltip"
             data-bs-placement="left" title="Premium Membership inclues LeaderBoard & Daily & Monthly Reports">
-            Buy Premium &#128081
+            Buy Premium &#128526
           </button>
           <button id="logoutBtn" class="topBtn btn py-1" type="button">Log out</button>
         </div>
       </div>
     </div>
   </nav>
-
-  <form id="form1" class="d-flex p-2" onsubmit="return false;">
-    <div class="input-group mb-3 d-flex m-4" id="category">
-      <button class="btn btn-outline-secondary dropdown-toggle" type="button" name="category" data-bs-toggle="dropdown"
-        aria-expanded="false" id="categoryBtn">
-        Select Category
-      </button>
-      <ul class="dropdown-menu" id="categoryMenu" aria-labelledby="categoryBtn">
-        
-        <li class="dropdown-item" data-value="Fashion & Beauty">
-          Fashion & Beauty
-        </li>
-        <li class="dropdown-item" data-value="Groceries & Pet Supplies">
-          Groceries
-        </li>
-        <li class="dropdown-item" data-value="Books & Education">
-          Books & Education
-        </li>
-        <li class="dropdown-item" data-value="Toys, Children & Baby">
-          Toys, Children & Baby
-        </li>
-        <li class="dropdown-item" data-value="Payments & Bookings">
-          Payments & Bookings
-        </li>
-        <li class="dropdown-item" data-value="Office & Professional">
-          Office & Professional
-        </li>
-        </ul>
-      <input type="hidden" name="category" value="default_value" id="categoryInput" />
-    </div>
-
-    <!--******************************************************************* -->
-    <!-- Decsiption -->
-    <div class="input-group mb-3 d-flex m-4" id="description">
-      <span class="input-group-text" id="inputGroup-sizing-default">Description</span>
-      <input type="text" id="descriptionValue" name="description" class="form-control" aria-label="Sizing example input"
-        aria-describedby="inputGroup-sizing-default" />
-    </div>
-
-    <!--  ****************************************************************** -->
-    <!-- Amount -->
-
-    <div class="input-group mb-3 d-flex m-4" id="amount">
-      <span class="input-group-text">Amount</span>
-      <span class="input-group-text"> &#8377;</span>
-      <input type="text" name="amount" class="form-control" aria-label="Dollar amount (with dot and two decimal places)"
-        id="amountValue" />
-    </div>
-    <div class="mb-3 d-flex m-4" id="submit">
-      <button type="submit" class="btn btn-success" id="submitBtn">
-        Add Expense
-      </button>
-    </div>
+  <!--  Navbar Ends Here -->
+  <div>
+    <form onsubmit="addExpense(event)">
+      <label for="amount">Enter Amount</label>
+      <input id="amount" name="amount" type="number"/>
+      <label for="ription">Description</label>
+      <input id="description" type="text"/>
+      <label for="category"></label>
+      <select id="category" name="category">
+          <option value="Movie"></option>
+          <option value="Movie">Movie</option>
+          <option value="Game">Game</option>
+          <option value="Food">Food</option>
+          <option value="Fuel">Fuel</option>
+      </select>
+      <button id="addbtn">Add</button>
   </form>
-  <div class="container mt-4 p-3 " id="table">
-    <table id="example" class="table table-hover" style="width:100%">
-      <thead id="tableHead">
-        <tr>
-          <th scope="col" class="rounded-start">Date</th>
-          <th scope="col">Category</th>
-          <th scope="col">Description</th>
-          <th scope="col">Amount</th>
-          <th scope="col" class="rounded-end"></th>
-        </tr>
-      </thead>
-      <tbody id="tbodyId">
-        
-      </tbody>
-    </table>
-    <nav aria-label="Page navigation example">
-      <ul id="paginationUL" class="pagination justify-content-md-end">
-      </ul>
-    </nav>
+  <div>
+    <ul id="list-items"></ul>
   </div>
-
-
+  </div>
 
   <!-- ---------------------------------------------------------------------------------- -->
   <!-- scripts -->

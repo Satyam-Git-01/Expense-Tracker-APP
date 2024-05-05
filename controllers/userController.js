@@ -1,6 +1,10 @@
 const path = require("path");
 const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const generateAccessToken = (id, email) => {
+  return jwt.sign({ userId: id, email: email }, process.env.JWT_TOKEN);
+};
 const handleSignUp = async (req, res, next) => {
   const { name, email, password } = req.body;
   try {
@@ -37,7 +41,11 @@ const handleLogin = async (req, res, next) => {
       } else if (result == true) {
         return res
           .status(200)
-          .json({ success: true, message: "Login SucessFUll" });
+          .json({
+            success: true,
+            message: "Login Sucessfull",
+            token: generateAccessToken(user.id, user.email),
+          });
       } else {
         return res
           .status(400)

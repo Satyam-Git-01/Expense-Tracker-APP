@@ -22,7 +22,8 @@ function login() {
   axios
     .post("http://localhost:5800/user/login", loginDetails)
     .then((result) => {
-      alert(result);
+      console.log(result);
+      localStorage.setItem("token", result.data.token);
       window.location.href = "/expense";
     })
     .catch((error) => {
