@@ -19,7 +19,7 @@ const getAllExpenses = async (req, res, next) => {
 
 const addExpense = async (req, res, next) => {
   const { amount, description, category } = req.body;
-  const transcation = sequelize.transaction();
+  const trans = await sequelize.transaction();
   console.log(req.user);
   try {
     await userModel.update(
@@ -31,21 +31,28 @@ const addExpense = async (req, res, next) => {
           id: req.user.id,
         },
       },
-      { transcation: transcation }
+      { transaction: trans }
     );
-    const result = await expenseModel.create({
-      amount,
-      description,
-      category,
-      userId: req.user.id,
-    });
+    const result = await expenseModel.create(
+      {
+        amount,
+        description,
+        category,
+        userId: req.user.id,
+      },
+      { transaction: trans }
+    );
+    await trans.commit();
     return res
       .status(201)
       .json({ success: true, message: "expense added successfully" });
   } catch (err) {
+    await trans.rollback();
     console.log(err);
   }
-  res.json(400).json({ success: false, message: "Error while adding Expense" });
+  return res
+    .json(400)
+    .json({ success: false, message: "Error while adding Expense" });
 };
 
 const deleteExpense = async (req, res, next) => {
