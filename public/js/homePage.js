@@ -87,7 +87,6 @@ async function isPremiumUser() {
   const res = await axios.get("http://localhost:5800/user/isPremiumUser", {
     headers: { Authorization: token },
   });
-  console.log(res)
   if (res.data.isPremiumUser) {
     buyPremiumButton.innerHTML = "Premium Member &#9889";
     reportsLink.innerHTML="Report &#9889"
@@ -98,6 +97,7 @@ async function isPremiumUser() {
     // reportsLink.setAttribute("href", "/reports/getReportsPage");
     buyPremiumButton.removeEventListener("click", buyPremiumButton);
   } else {
+    //do nothing
   }
 }
 
