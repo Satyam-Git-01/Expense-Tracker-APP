@@ -1,12 +1,15 @@
 const express = require("express");
-const { config } = require("dotenv").config();
+const path = require("node:path");
+const dotenv = require("dotenv").config();
 const sequelize = require("./utils/dbConn");
 const bodyParser = require("body-parser");
-const path = require("node:path");
 const app = express();
 const userRoute = require("./routers/userRoute");
 const expenseRoute = require("./routers/expenseRoute");
 const purchaseRoute = require('./routers/purchaseRoute')
+const premiumRoute = require('./routers/premiumRoute')
+
+
 const PORT_NUMBER = process.env.PORT_NUMBER || 4300;
 
 //Imports for Models
@@ -15,14 +18,17 @@ const Expense = require("./models/expenseModel");
 const Order = require("./models/orderModel");
 const ResetPassword = require('./models/resetPasswordModel');
 
+//Application Level Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static("public"));
 
+//Route Level Middlewares
 app.use("/", userRoute);
 app.use("/user", userRoute);
 app.use("/expense", expenseRoute);
 app.use("/purchase",purchaseRoute)
+app.use('/premium',premiumRoute)
 
 
 //Relationship among the tables
