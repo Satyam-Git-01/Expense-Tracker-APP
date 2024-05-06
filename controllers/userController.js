@@ -39,13 +39,11 @@ const handleLogin = async (req, res, next) => {
         console.log(err);
         res.status(400).json({ sucess: false, message: "Error Occured" });
       } else if (result == true) {
-        return res
-          .status(200)
-          .json({
-            success: true,
-            message: "Login Sucessfull",
-            token: generateAccessToken(user.id, user.email),
-          });
+        return res.status(200).json({
+          success: true,
+          message: "Login Sucessfull",
+          token: generateAccessToken(user.id, user.email),
+        });
       } else {
         return res
           .status(400)
@@ -64,9 +62,22 @@ const handleLoginPage = (req, res, next) => {
     console.log(error);
   }
 };
+const isPremiumUser = async (req, res, next) => {
+  try {
+    const user = await userModel.findOne({ where: { id: req.user.id } });
+    if (user.isPremiumUser == 1) {
+      return res.status(200).send(user);
+    }
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ success: false, message: "Error" });
+  }
+};
 
 module.exports = {
   handleSignUp,
   handleLoginPage,
   handleLogin,
+  generateAccessToken,
+  isPremiumUser,
 };
