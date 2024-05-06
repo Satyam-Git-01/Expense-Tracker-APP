@@ -2,8 +2,17 @@ const path = require("path");
 const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+/**
+ * 
+ * @param {*} id Required
+ * @param {*} email Not Required
+ * @returns {*} A Token For User
+ */
 const generateAccessToken = (id, email) => {
-  return jwt.sign({ userId: id, email: email }, process.env.JWT_TOKEN);
+  /*Sign method's first argument is a response that will get returned 
+    if verify successfully
+  */
+  return jwt.sign({ userId: id}, process.env.JWT_TOKEN);
 };
 const handleSignUp = async (req, res, next) => {
   const { name, email, password } = req.body;
