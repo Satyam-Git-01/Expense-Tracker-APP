@@ -7,6 +7,7 @@ const app = express();
 const userRoute = require("./routers/userRoute");
 const expenseRoute = require("./routers/expenseRoute");
 const purchaseRoute = require('./routers/purchaseRoute')
+const premiumRoute = require('./routers/premiumRoute')
 const PORT_NUMBER = process.env.PORT_NUMBER || 4300;
 
 //Imports for Models
@@ -23,6 +24,7 @@ app.use("/", userRoute);
 app.use("/user", userRoute);
 app.use("/expense", expenseRoute);
 app.use("/purchase",purchaseRoute)
+app.use('/premium',premiumRoute)
 
 
 //Relationship among the tables

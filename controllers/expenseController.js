@@ -1,5 +1,8 @@
 const path = require("path");
 const expenseModel = require("../models/expenseModel");
+const userModel = require("../models/userModel");
+const { where } = require("sequelize");
+const sequelize = require("../utils/dbConn");
 const getHomePage = async (req, res, next) => {
   res.sendFile(path.join(__dirname, "../", "public", "views", "homepage.html"));
 };
@@ -16,8 +19,20 @@ const getAllExpenses = async (req, res, next) => {
 
 const addExpense = async (req, res, next) => {
   const { amount, description, category } = req.body;
+  const transcation = sequelize.transaction();
   console.log(req.user);
   try {
+    await userModel.update(
+      {
+        totalExpenses: req.user.totalExpenses + Number(amount),
+      },
+      {
+        where: {
+          id: req.user.id,
+        },
+      },
+      { transcation: transcation }
+    );
     const result = await expenseModel.create({
       amount,
       description,

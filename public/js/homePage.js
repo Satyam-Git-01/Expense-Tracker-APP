@@ -54,6 +54,7 @@ async function addExpense(event) {
       { headers: { Authorization: token } }
     );
     console.log(result);
+    window.location.reload();
   } catch (err) {
     console.log(err);
   }
@@ -64,7 +65,7 @@ async function getAllExpenses() {
     const data = await axios.get(
       "http://localhost:5800/expense/getAllExpenses"
     );
-    showItems(data.data.result);
+     showItems(data.data.result);
     console.log(data.data.result);
   } catch (err) {
     console.log(err);
@@ -90,17 +91,17 @@ async function isPremiumUser() {
   if (res.data.isPremiumUser) {
     buyPremiumButton.innerHTML = "Premium Member &#9889";
     reportsLink.innerHTML="Report &#9889"
-    reportsLink.removeAttribute("onclick");
+    //reportsLink.removeAttribute("onclick");
     leaderboardLink.innerHTML="Leaderboard &#9889"
-    leaderboardLink.removeAttribute("onclick");
-    leaderboardLink.setAttribute("href", "/premium/getLeaderboardPage");
-    reportsLink.setAttribute("href", "/reports/getReportsPage");
+    //leaderboardLink.removeAttribute("onclick");
+    // leaderboardLink.setAttribute("href", "/premium/getLeaderboardPage");
+    // reportsLink.setAttribute("href", "/reports/getReportsPage");
     buyPremiumButton.removeEventListener("click", buyPremiumButton);
   } else {
   }
 }
 
-function showItems(data) {
+ function showItems(data) {
   const list = document.getElementById("list-items");
   data.forEach((item) => {
     const li = document.createElement("li");
@@ -116,6 +117,7 @@ async function deleteItem(id) {
       `http://localhost:5800/expense/delete/${id}`
     );
     console.log(result);
+    window.location.reload()
   } catch (err) {
     console.log(err);
   }
@@ -123,6 +125,17 @@ async function deleteItem(id) {
 
 getAllExpenses();
 
+async function getLeaderBoardData(){
+  try{
+    const result = axios.get('http://localhost:5800/premium/getLeaderBoardData');
+    const data= await result
+    console.log(data)
+  }
+  catch(err){
+    console.log(err)
+  }
+}
 
 document.addEventListener("DOMContentLoaded", isPremiumUser);
 logoutBtn.addEventListener("click", logout);
+leaderboardLink.addEventListener('click',getLeaderBoardData);
