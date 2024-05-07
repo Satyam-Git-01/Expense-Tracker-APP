@@ -17,6 +17,7 @@ const User = require("./models/userModel");
 const Expense = require("./models/expenseModel");
 const Order = require("./models/orderModel");
 const ResetPassword = require('./models/resetPasswordModel');
+const passwordRoute = require("./routers/passwordRoute");
 
 //Application Level Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -29,6 +30,7 @@ app.use("/user", userRoute);
 app.use("/expense", expenseRoute);
 app.use("/purchase",purchaseRoute)
 app.use('/premium',premiumRoute)
+app.use('/password',passwordRoute)
 
 
 //Relationship among the tables

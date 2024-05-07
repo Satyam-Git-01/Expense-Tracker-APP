@@ -112,11 +112,9 @@ async function isPremiumUser() {
 
 async function deleteItem(id) {
   try {
-    console.log(id);
     const result = await axios.delete(
       `http://localhost:5800/expense/delete/${id}`
     );
-    console.log(result);
     window.location.reload()
   } catch (err) {
     console.log(err);

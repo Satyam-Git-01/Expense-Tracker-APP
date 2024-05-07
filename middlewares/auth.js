@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 
 /**
- * A middleware which has access to all request and response purpose is to verify user using jwt.
+ * A middleware which has access to all request and response, purpose is to verify user using jwt.
  * @param {*} req 
  * @param {*} res 
  * @param {*} next A next middleware in function
