@@ -2,7 +2,13 @@ const path = require("path");
 const Sib = require("sib-api-v3-sdk");
 const { v4: uuidv4 } = require("uuid");
 const userModel = require("../models/userModel");
+const bcrypt = require("bcrypt");
 const ResetPasswordModel = require("../models/resetPasswordModel");
+
+const hashedPassword = async (password) => {
+  return await bcrypt.hash(password, 10);
+};
+
 const getForgotPasswordPage = (req, res, next) => {
   res.sendFile(path.join(__dirname, "../", "public", "views", "forgot.html"));
 };
@@ -62,7 +68,53 @@ const sendMail = async (req, res, next) => {
     return res.status(400).json({ success: true, message: "Shit Happened" });
   }
 };
+
+const getresetPasswordPage = (req, res, next) => {
+  res.sendFile(
+    path.join(__dirname, "../", "public", "views", "resetPassword.html")
+  );
+};
+
+const updatePassword = async (req, res, next) => {
+  try {
+    const { newPassword } = req.body;
+    const requestId = req.headers.referer.split("/").at(-1);
+    const checkStatusOfRequest = await ResetPasswordModel.findOne({
+      where: { id: requestId, isActive: true },
+    });
+    if (checkStatusOfRequest) {
+      const userId = checkStatusOfRequest.userId;
+      const result = await ResetPasswordModel.update(
+        { isActive: false },
+        { where: { id: requestId } }
+      );
+      const newhashedPassword = await hashedPassword(newPassword);
+      const user = userModel.update(
+        {
+          password: newhashedPassword,
+        },
+        {
+          where: {
+            id: userId,
+          },
+        }
+      );
+      return res
+        .status(200)
+        .json({ message: "Successfully changed password!" });
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Link is already Used Once, Request for new Link!" });
+    }
+  } catch (err) {
+    return res.status(400).json({ message: "Failed to change password!" });
+  }
+};
+
 module.exports = {
   getForgotPasswordPage,
   sendMail,
+  getresetPasswordPage,
+  updatePassword,
 };
