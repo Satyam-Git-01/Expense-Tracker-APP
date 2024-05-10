@@ -113,16 +113,16 @@ async function isPremiumUser() {
       buyPremiumButton.innerHTML = "Premium Member &#9889";
       reportsLink.innerHTML = "Report &#9889";
       leaderboardLink.innerHTML = "Leaderboard &#9889";
-      reportsLink.removeEventListener('click',nonPremiumMessage)
-      leaderboardLink.removeEventListener('click',nonPremiumMessage)
+      reportsLink.removeEventListener("click", nonPremiumMessage);
+      reportsLink.setAttribute("href", "/premium/getReportsPage");
+      leaderboardLink.removeEventListener("click", nonPremiumMessage);
       buyPremiumButton.removeEventListener("click", buyPremium);
       buyPremiumButton.style.backgroundColor = "#7fff00";
       leaderboardLink.setAttribute("href", "/premium/getLeaderBoardPage");
-      reportsLink.addEventListener("click", getExpenses);
       buyPremiumButton.addEventListener("click", premiumMessage);
-    } 
+    }
   } catch (err) {
-    console.log(err)
+    console.log(err);
   }
 }
 
@@ -149,8 +149,14 @@ function showItems(data) {
 
 async function deleteItem(id) {
   try {
+    const token = localStorage.getItem("token");
     const result = await axios.delete(
-      `http://localhost:5800/expense/delete/${id}`
+      `http://localhost:5800/expense/delete/${id}`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
     );
     window.location.reload();
   } catch (err) {
@@ -170,27 +176,9 @@ async function getLeaderBoardData() {
   }
 }
 
-async function getExpenses() {
-  try {
-    const token = localStorage.getItem("token");
-    const result = await axios.get(
-      "http://localhost:5800/expense/downloadExpenses",
-      {
-        headers: { Authorization: token },
-      }
-    );
-    let linkOfDownload = document.createElement("a");
-    linkOfDownload.href = `${result.data.fileURL}`;
-    linkOfDownload.download = "expense.txt";
-    linkOfDownload.click();
-  } catch (err) {
-    console.log(err);
-  }
-}
-
 document.addEventListener("DOMContentLoaded", isPremiumUser);
 document.addEventListener("DOMContentLoaded", getAllExpenses);
 logoutBtn.addEventListener("click", logout);
 buyPremiumButton.addEventListener("click", buyPremium);
-reportsLink.addEventListener('click',nonPremiumMessage);
-leaderboardLink.addEventListener('click',nonPremiumMessage)
+reportsLink.addEventListener("click", nonPremiumMessage);
+leaderboardLink.addEventListener("click", nonPremiumMessage);

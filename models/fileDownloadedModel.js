@@ -8,6 +8,9 @@ const FileDownloadedModel = sequelize.define("filesdownloaded", {
     autoIncrement: true,
   },
   url: Sequelize.STRING,
+  generatedOn: {
+    type: Sequelize.STRING,
+  },
 });
 
-module.exports=FileDownloadedModel;
+module.exports = FileDownloadedModel;

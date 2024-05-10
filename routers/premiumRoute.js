@@ -4,15 +4,17 @@ const {
   getLeaderBoardData,
   getLeaderBoardPage,
   getReportsPage,
-  getDailyReports,
-  getMonthlyReports,
+  getDownloadedReportsData,
 } = require("../controllers/premiumController");
 const premiumRoute = express.Router();
 
 premiumRoute.get("/getLeaderBoardData", getLeaderBoardData);
 premiumRoute.get("/getLeaderBoardPage", getLeaderBoardPage);
 premiumRoute.get("/getReportsPage", getReportsPage);
-premiumRoute.post("/reports/dailyReports", authentication, getDailyReports);
-premiumRoute.post("/reports/monthlyReports", authentication, getMonthlyReports);
+premiumRoute.get(
+  "/getDownloadedReportsData",
+  authentication,
+  getDownloadedReportsData
+);
 
 module.exports = premiumRoute;

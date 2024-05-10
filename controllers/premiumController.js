@@ -1,5 +1,6 @@
 const userModel = require("../models/userModel");
 const Expense = require("../models/expenseModel");
+const FilesDownloadedModel = require("../models/fileDownloadedModel");
 const path = require("path");
 const { Op } = require("sequelize");
 const AWS = require("aws-sdk");
@@ -24,36 +25,17 @@ const getReportsPage = async (req, res, next) => {
   res.sendFile(path.join(__dirname, "../", "public", "views", "reports.html"));
 };
 
-
-
-const getDailyReports = async (req, res, next) => {
+const getDownloadedReportsData = async (req, res, next) => {
   try {
-    const date = req.body.date;
-    const expenses = await Expense.findAll({
-      where: { date: date, userId: req.user.id },
-    });
-    return res.send(expenses);
-  } catch (error) {
-    console.log(error);
-  }
-};
-const getMonthlyReports = async (req, res, next) => {
-  try {
-    const month = req.body.month;
-
-    const expenses = await Expense.findAll({
+    const id = req.user.id;
+    const result = await FilesDownloadedModel.findAll({
       where: {
-        date: {
-          [Op.like]: `%-${month}-%`,
-        },
-        userId: req.user.id,
+        userId: id,
       },
-      raw: true,
     });
-
-    return res.send(expenses);
-  } catch (error) {
-    console.log(error);
+    return res.status(200).json({ success: true, result: result });
+  } catch (err) {
+    console.log(err);
   }
 };
 
@@ -61,6 +43,5 @@ module.exports = {
   getLeaderBoardData,
   getLeaderBoardPage,
   getReportsPage,
-  getDailyReports,
-  getMonthlyReports,
+  getDownloadedReportsData,
 };

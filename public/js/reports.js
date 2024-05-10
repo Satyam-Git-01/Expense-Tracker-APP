@@ -1,166 +1,60 @@
-const dateInput = document.getElementById("date");
-const dateShowBtn = document.getElementById("dateShowBtn");
-const tbodyDaily = document.getElementById("tbodyDailyId");
-const tfootDaily = document.getElementById("tfootDailyId");
-
-const monthInput = document.getElementById("month");
-const monthShowBtn = document.getElementById("monthShowBtn");
-const tbodyMonthly = document.getElementById("tbodyMonthlyId");
-const tfootMonthly = document.getElementById("tfootMonthlyId");
-
-const logoutBtn = document.getElementById("logoutBtn");
-
-async function getDailyReport(e) {
+const downloadReportBtn = document.getElementById("downloadReportBtn");
+async function getDowloadedReportsData() {
   try {
-    e.preventDefault();
     const token = localStorage.getItem("token");
-    const date = new Date(dateInput.value);
-    const formattedDate = `${date.getDate().toString().padStart(2, "0")}-${(
-      date.getMonth() + 1
-    )
-      .toString()
-      .padStart(2, "0")}-${date.getFullYear()}`;
-
-    let totalAmount = 0;
-    const res = await axios.post(
-      `http://localhost:5800/premium/reports/dailyReports`,
+    const result = axios.get(
+      "http://localhost:5800/premium/getDownloadedReportsData",
       {
-        date: formattedDate,
-      },
-      { headers: { Authorization: token } }
+        headers: {
+          Authorization: token,
+        },
+      }
     );
+    const data = await result;
+    console.log(data.data.result);
+    showItems(data.data.result);
+  } catch (err) {
+    console.log(err);
+  }
+}
 
-    tbodyDaily.innerHTML = "";
-    tfootDaily.innerHTML = "";
-
-    res.data.forEach((expense) => {
-      totalAmount += expense.amount;
-
-      const tr = document.createElement("tr");
-      tr.setAttribute("class", "trStyle");
-      tbodyDaily.appendChild(tr);
-
-      const th = document.createElement("th");
-      th.setAttribute("scope", "row");
-      th.appendChild(document.createTextNode(expense.date));
-
-      const td1 = document.createElement("td");
-      td1.appendChild(document.createTextNode(expense.category));
-
-      const td2 = document.createElement("td");
-      td2.appendChild(document.createTextNode(expense.description));
-
-      const td3 = document.createElement("td");
-      td3.appendChild(document.createTextNode(expense.amount));
-
-      tr.appendChild(th);
-      tr.appendChild(td1);
-      tr.appendChild(td2);
-      tr.appendChild(td3);
-    });
-
+function showItems(data) {
+  const tableBody = document.getElementById("list-items");
+  data.forEach((item, index) => {
     const tr = document.createElement("tr");
-    tr.setAttribute("class", "trStyle");
-    tfootDaily.appendChild(tr);
-
+    const th = document.createElement("th");
+    th.setAttribute("scope", "row");
+    th.innerHTML = `${index + 1}`;
     const td1 = document.createElement("td");
     const td2 = document.createElement("td");
-    const td3 = document.createElement("td");
-    const td4 = document.createElement("td");
+    td1.innerHTML = `<a href='${item.url}'>${item.url}</a>`;
+    td2.innerHTML = `${item.generatedOn}`;
 
-    td3.setAttribute("id", "dailyTotal");
-    td4.setAttribute("id", "dailyTotalAmount");
-    td3.appendChild(document.createTextNode("Total"));
-    td4.appendChild(document.createTextNode(totalAmount));
-
+    tr.appendChild(th);
     tr.appendChild(td1);
     tr.appendChild(td2);
-    tr.appendChild(td3);
-    tr.appendChild(td4);
-  } catch (error) {
-    console.log(error);
-  }
+    tableBody.appendChild(tr);
+  });
 }
 
-async function getMonthlyReport(e) {
+async function getExpenses() {
   try {
-    e.preventDefault();
     const token = localStorage.getItem("token");
-    const month = new Date(monthInput.value);
-    const formattedMonth = `${(month.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}`;
-
-    let totalAmount = 0;
-    const res = await axios.post(
-      `http://localhost:5800/premium/reports/monthlyReports`,
+    const result = await axios.get(
+      "http://localhost:5800/expense/downloadExpenses",
       {
-        month: formattedMonth,
-      },
-      { headers: { Authorization: token } }
+        headers: { Authorization: token },
+      }
     );
-
-    tbodyMonthly.innerHTML = "";
-    tfootMonthly.innerHTML = "";
-
-    res.data.forEach((expense) => {
-      totalAmount += expense.amount;
-
-      const tr = document.createElement("tr");
-      tr.setAttribute("class", "trStyle");
-      tbodyMonthly.appendChild(tr);
-
-      const th = document.createElement("th");
-      th.setAttribute("scope", "row");
-      th.appendChild(document.createTextNode(expense.date));
-
-      const td1 = document.createElement("td");
-      td1.appendChild(document.createTextNode(expense.category));
-
-      const td2 = document.createElement("td");
-      td2.appendChild(document.createTextNode(expense.description));
-
-      const td3 = document.createElement("td");
-      td3.appendChild(document.createTextNode(expense.amount));
-
-      tr.appendChild(th);
-      tr.appendChild(td1);
-      tr.appendChild(td2);
-      tr.appendChild(td3);
-    });
-
-    const tr = document.createElement("tr");
-    tr.setAttribute("class", "trStyle");
-    tfootMonthly.appendChild(tr);
-
-    const td1 = document.createElement("td");
-    const td2 = document.createElement("td");
-    const td3 = document.createElement("td");
-    const td4 = document.createElement("td");
-
-    td3.setAttribute("id", "monthlyTotal");
-    td4.setAttribute("id", "monthlyTotalAmount");
-    td3.appendChild(document.createTextNode("Total"));
-    td4.appendChild(document.createTextNode(totalAmount));
-
-    tr.appendChild(td1);
-    tr.appendChild(td2);
-    tr.appendChild(td3);
-    tr.appendChild(td4);
-  } catch (error) {
-    console.log(error);
+    location.reload();
+    let linkOfDownload = document.createElement("a");
+    linkOfDownload.href = `${result.data.fileURL}`;
+    linkOfDownload.download = "expense.txt";
+    linkOfDownload.click();
+  } catch (err) {
+    console.log(err);
   }
 }
 
-async function logout() {
-  try {
-    localStorage.clear();
-    window.location.href = "/";
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-dateShowBtn.addEventListener("click", getDailyReport);
-monthShowBtn.addEventListener("click", getMonthlyReport);
-logoutBtn.addEventListener("click", logout);
+document.addEventListener("DOMContentLoaded", getDowloadedReportsData);
+downloadReportBtn.addEventListener("click", getExpenses);

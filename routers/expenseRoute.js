@@ -12,6 +12,6 @@ const expenseRoute = express.Router();
 expenseRoute.get("/", getHomePage);
 expenseRoute.get("/getAllExpenses", authentication, getAllExpenses);
 expenseRoute.post("/addExpense", authentication, addExpense);
-expenseRoute.delete("/delete/:id", deleteExpense);
+expenseRoute.delete("/delete/:id",authentication, deleteExpense);
 expenseRoute.get("/downloadExpenses", authentication, downloadExpenseReport);
 module.exports = expenseRoute;

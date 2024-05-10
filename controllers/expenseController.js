@@ -33,14 +33,22 @@ const downloadExpenseReport = async (req, res, next) => {
     const expenses = await getExpenses(userId);
     const stringifiedData = JSON.stringify(expenses);
     const fileName = `Expense-${req.user.id}/${new Date()}.txt`;
+    const currentDate = new Date();
+    const day = currentDate.getDate();
+    const month = currentDate.getMonth() + 1;
+    const year = currentDate.getFullYear();
+    const formattedDay = day < 10 ? `0${day}` : day;
+    const formattedMonth = month < 10 ? `0${month}` : month;
+    const date = `${formattedDay}-${formattedMonth}-${year}`;
     const fileURL = await uploadTos3(stringifiedData, fileName);
     const result = await fileDownloadedModel.create({
       url: fileURL,
       userId: userId,
+      generatedOn: date,
     });
     return res.status(200).json({ success: true, fileURL: fileURL });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     return res.status(500).json({ success: false, fileURL: null });
   }
 };
@@ -105,9 +113,26 @@ const addExpense = async (req, res, next) => {
 
 const deleteExpense = async (req, res, next) => {
   try {
+    const expense = await expenseModel.findOne({
+      where: {
+        id: req.params.id,
+      },
+    });
     await expenseModel.destroy({ where: { id: req.params.id } });
+    console.log(expense);
+    await userModel.update(
+      {
+        totalExpenses: Number(req.user.totalExpenses) - Number(expense.amount),
+      },
+      {
+        where: {
+          id: expense.userId,
+        },
+      }
+    );
     res.status(200).json({ success: true, message: "Deleted" });
   } catch (err) {
+    console.log(err);
     return res
       .status(500)
       .json({ success: false, message: "Error While Deleting Expense" });
