@@ -3,7 +3,6 @@ const Order = require("../models/orderModel");
 const {generateAccessToken} = require("./userController");
 
 const purchasePremium = async (req, res) => {
-  console.log("Reached")
   try {
     var rzp = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,

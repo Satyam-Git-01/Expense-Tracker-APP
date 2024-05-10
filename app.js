@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("node:path");
 const dotenv = require("dotenv").config();
-const sequelize = require("./utils/dbConn");
+const sequelize = require("./services/dbConn");
 const bodyParser = require("body-parser");
 const app = express();
 

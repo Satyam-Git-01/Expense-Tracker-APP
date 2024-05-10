@@ -2,7 +2,7 @@ const path = require("path");
 const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const sequelize = require("../utils/dbConn");
+const sequelize = require("../services/dbConn");
 /**
  *
  * @param {*} id Required
