@@ -1,3 +1,4 @@
+const resetBtn = document.getElementById('resetbtn')
 async function forgotPasswordSendMail(event) {
   event.preventDefault();
   try {
@@ -8,7 +9,6 @@ async function forgotPasswordSendMail(event) {
       { email }
     );
     console.log(result.data.message);
-    //window.location.href = "/";
   } catch (err) {
     console.log(err);
   }

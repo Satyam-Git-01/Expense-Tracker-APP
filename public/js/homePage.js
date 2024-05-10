@@ -1,7 +1,7 @@
 const buyPremiumButton = document.getElementById("buyPremiumButton");
-const reportsLink= document.getElementById('reportsLink')
-const leaderboardLink= document.getElementById('leaderboardLink')
-const logoutBtn= document.getElementById('logoutBtn')
+const reportsLink = document.getElementById("reportsLink");
+const leaderboardLink = document.getElementById("leaderboardLink");
+const logoutBtn = document.getElementById("logoutBtn");
 
 buyPremiumButton.onclick = async function (e) {
   const token = localStorage.getItem("token");
@@ -41,7 +41,19 @@ async function addExpense(event) {
   const description = event.target.description.value;
   const category = event.target.category.value;
   const token = localStorage.getItem("token");
+  const currentDate = new Date();
+  const day = currentDate.getDate();
+  const month = currentDate.getMonth() + 1;
+  const year = currentDate.getFullYear();
+
+  // add leading zeros to day and month if needed
+  const formattedDay = day < 10 ? `0${day}` : day;
+  const formattedMonth = month < 10 ? `0${month}` : month;
+
+  // create the date string in date-month-year format
+  const date = `${formattedDay}-${formattedMonth}-${year}`;
   const expenseData = {
+    date,
     amount,
     description,
     category,
@@ -65,7 +77,7 @@ async function getAllExpenses() {
     const data = await axios.get(
       "http://localhost:5800/expense/getAllExpenses"
     );
-     showItems(data.data.result);
+    showItems(data.data.result);
     console.log(data.data.result);
   } catch (err) {
     console.log(err);
@@ -81,7 +93,6 @@ async function logout() {
   }
 }
 
-
 async function isPremiumUser() {
   const token = localStorage.getItem("token");
   const res = await axios.get("http://localhost:5800/user/isPremiumUser", {
@@ -89,9 +100,9 @@ async function isPremiumUser() {
   });
   if (res.data.isPremiumUser) {
     buyPremiumButton.innerHTML = "Premium Member &#9889";
-    reportsLink.innerHTML="Report &#9889"
+    reportsLink.innerHTML = "Report &#9889";
     //reportsLink.removeAttribute("onclick");
-    leaderboardLink.innerHTML="Leaderboard &#9889"
+    leaderboardLink.innerHTML = "Leaderboard &#9889";
     //leaderboardLink.removeAttribute("onclick");
     // leaderboardLink.setAttribute("href", "/premium/getLeaderboardPage");
     // reportsLink.setAttribute("href", "/reports/getReportsPage");
@@ -101,12 +112,27 @@ async function isPremiumUser() {
   }
 }
 
- function showItems(data) {
-  const list = document.getElementById("list-items");
-  data.forEach((item) => {
-    const li = document.createElement("li");
-    li.innerHTML = `${item.amount}  ${item.description} <button onclick=deleteItem(${item.id})>Delete</button>  <button>Edit</button>`;
-    list.append(li);
+function showItems(data) {
+  const tableBody = document.getElementById("list-items");
+  data.forEach((item, index) => {
+    const tr = document.createElement("tr");
+    const th = document.createElement("th");
+    th.setAttribute("scope", "row");
+    th.innerHTML = `${index + 1}`;
+    const td1 = document.createElement("td");
+    const td2 = document.createElement("td");
+    const td3 = document.createElement("td");
+    td1.innerHTML = `<span class="badge bg-primary rounded-pill">${item.amount} &#8377</span>`;
+    td2.innerHTML = `${item.description}`;
+    td3.innerHTML = `<div> <button class='btn btn-danger' onclick=deleteItem(${item.id})>Delete</button>  <button class='btn btn-dark'>Edit</button></div>`;
+    // li.classList.add('list-group-item')
+    // li.innerHTML = `<span class="badge bg-primary rounded-pill">${item.amount} &#8377</span> ${item.description} <div> <button class='btn btn-danger' onclick=deleteItem(${item.id})>Delete</button>  <button class='btn btn-dark'>Edit</button></div>`;
+    // list.append(li);
+    tr.appendChild(th);
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+    tableBody.appendChild(tr);
   });
 }
 
@@ -115,7 +141,7 @@ async function deleteItem(id) {
     const result = await axios.delete(
       `http://localhost:5800/expense/delete/${id}`
     );
-    window.location.reload()
+    window.location.reload();
   } catch (err) {
     console.log(err);
   }
@@ -123,17 +149,36 @@ async function deleteItem(id) {
 
 getAllExpenses();
 
-async function getLeaderBoardData(){
-  try{
-    const result = axios.get('http://localhost:5800/premium/getLeaderBoardData');
-    const data= await result
-    console.log(data)
-  }
-  catch(err){
-    console.log(err)
+async function getLeaderBoardData() {
+  try {
+    const result = axios.get(
+      "http://localhost:5800/premium/getLeaderBoardData"
+    );
+    const data = await result;
+    console.log(data);
+  } catch (err) {
+    console.log(err);
   }
 }
 
+async function getExpenses() {
+  try {
+    const token = localStorage.getItem("token");
+    const result = await axios.get(
+      "http://localhost:5800/expense/downloadExpenses",
+      {
+        headers: { Authorization: token },
+      }
+    );
+    let a = document.createElement("a");
+    a.href = `${result.data.fileURL}`;
+    a.download = "expense.txt";
+    a.click();
+  } catch (err) {
+    console.log(err);
+  }
+}
+reportsLink.addEventListener("click", getExpenses);
+
 document.addEventListener("DOMContentLoaded", isPremiumUser);
 logoutBtn.addEventListener("click", logout);
-leaderboardLink.addEventListener('click',getLeaderBoardData);

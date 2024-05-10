@@ -6,9 +6,9 @@ const bodyParser = require("body-parser");
 const app = express();
 const userRoute = require("./routers/userRoute");
 const expenseRoute = require("./routers/expenseRoute");
-const purchaseRoute = require('./routers/purchaseRoute')
-const premiumRoute = require('./routers/premiumRoute')
-
+const purchaseRoute = require("./routers/purchaseRoute");
+const premiumRoute = require("./routers/premiumRoute");
+const passwordRoute = require("./routers/passwordRoute");
 
 const PORT_NUMBER = process.env.PORT_NUMBER || 4300;
 
@@ -16,8 +16,8 @@ const PORT_NUMBER = process.env.PORT_NUMBER || 4300;
 const User = require("./models/userModel");
 const Expense = require("./models/expenseModel");
 const Order = require("./models/orderModel");
-const ResetPassword = require('./models/resetPasswordModel');
-const passwordRoute = require("./routers/passwordRoute");
+const ResetPassword = require("./models/resetPasswordModel");
+const FileDownloaded = require("./models/fileDownloadedModel");
 
 //Application Level Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -28,18 +28,19 @@ app.use(express.static("public"));
 app.use("/", userRoute);
 app.use("/user", userRoute);
 app.use("/expense", expenseRoute);
-app.use("/purchase",purchaseRoute)
-app.use('/premium',premiumRoute)
-app.use('/password',passwordRoute)
-
+app.use("/purchase", purchaseRoute);
+app.use("/premium", premiumRoute);
+app.use("/password", passwordRoute);
 
 //Relationship among the tables
 User.hasMany(Expense);
 Expense.belongsTo(User);
-User.hasMany(Order)
-Order.belongsTo(User)
+User.hasMany(Order);
+Order.belongsTo(User);
 ResetPassword.belongsTo(User);
 User.hasMany(ResetPassword);
+User.hasMany(FileDownloaded);
+FileDownloaded.belongsTo(User);
 
 sequelize
   .sync()

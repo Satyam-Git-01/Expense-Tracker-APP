@@ -4,11 +4,37 @@ body {
   width: 100%;
   background-color: #effeff;
 }
+#navigation {
+  background-color: #000000;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 5px 0px 20px 9px #87a5d1;
+  margin-top: 5vh;
+  margin-bottom: 5vh;
+  background-color: black;
+  color: white;
+  border: 1px solid blue;
+  border-radius: 8px;
+}
+.topBtn {
+  background-color: white;
+  border-color: white;
+  color: #293241;
+}
+label{
+  margin-bottom: 8px;
+}
 /* 293241 dark
   3d5a80 blue
   98c1d9 light
 */
-.editDelete {
+/* .editDelete {
   float: right;
   margin: 3px;
   padding: 3px 10px;
@@ -32,14 +58,7 @@ body {
   border-color: #293241;
   color: white;
 }
-.topBtn {
-  background-color: white;
-  border-color: white;
-  color: #293241;
-}
-#navigation {
-  background-color: #000000;
-}
+
 #categoryBtn {
   background-color: #293241;
   width: auto;
@@ -55,10 +74,6 @@ body {
   color: white;
   border: none;
 }
-#description {
-  width: 2000px;
-}
-
 .trStyle {
   background-color: transparent;
 }
@@ -90,4 +105,10 @@ body {
 .page-link:hover {
   background-color: #d2eaf7;
   color: #233b64;
-}
+} */
+/* .list-group-item {
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+} */
