@@ -7,6 +7,7 @@ async function forgotPasswordSendMail(event) {
       "http://localhost:5800/password/sendResetPasswordMail",
       { email }
     );
+    alert('Email has been Sent to your email id please check spam folder too.')
   } catch (err) {
     console.log(err);
   }

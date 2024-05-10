@@ -27,6 +27,26 @@ const getAllExpenses = async (req, res, next) => {
   }
 };
 
+const getAllExpensesforPagination = async (req, res, next) => {
+  try {
+    const pageNo = req.params.page;
+    const limit = 5;
+    const offset = (pageNo - 1) * limit;
+    const totalExpenses = await expenseModel.count({
+      where: { userId: req.user.id },
+    });
+    const totalPages = Math.ceil(totalExpenses / limit);
+    const expenses = await expenseModel.findAll({
+      where: { userId: req.user.id },
+      offset: offset,
+      limit: limit,
+    });
+    res.json({ expenses: expenses, totalPages: totalPages });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const downloadExpenseReport = async (req, res, next) => {
   try {
     const userId = req.user.id;
@@ -145,4 +165,5 @@ module.exports = {
   getExpenses,
   deleteExpense,
   downloadExpenseReport,
+  getAllExpensesforPagination
 };

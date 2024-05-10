@@ -73,14 +73,15 @@ async function getAllExpenses() {
   try {
     const token = localStorage.getItem("token");
     const data = await axios.get(
-      "http://localhost:5800/expense/getAllExpenses",
+      "http://localhost:5800/expense/getAllExpenses/1",
       {
         headers: {
           Authorization: token,
         },
       }
     );
-    showItems(data.data.result);
+    console.log(data);
+    showItems(data.data.expenses, data.data.totalPages);
   } catch (err) {
     console.log(err);
   }
@@ -126,8 +127,8 @@ async function isPremiumUser() {
   }
 }
 
-function showItems(data) {
-  const tableBody = document.getElementById("list-items");
+const tableBody = document.getElementById("list-items");
+function showItems(data, totalPages) {
   data.forEach((item, index) => {
     const tr = document.createElement("tr");
     const th = document.createElement("th");
@@ -136,15 +137,45 @@ function showItems(data) {
     const td1 = document.createElement("td");
     const td2 = document.createElement("td");
     const td3 = document.createElement("td");
+    const td4 = document.createElement("td");
     td1.innerHTML = `<span class="badge bg-primary rounded-pill">${item.amount} &#8377</span>`;
     td2.innerHTML = `${item.description}`;
-    td3.innerHTML = `<div> <button class='btn btn-danger' onclick=deleteItem(${item.id})>Delete</button>  <button class='btn btn-dark'>Edit</button></div>`;
+    td3.innerHTML=`${item.category}`
+    td4.innerHTML = `<div> <button class='btn btn-danger' onclick=deleteItem(${item.id})>Delete</button>  <button class='btn btn-dark'>Edit</button></div>`;
     tr.appendChild(th);
     tr.appendChild(td1);
     tr.appendChild(td2);
     tr.appendChild(td3);
+    tr.appendChild(td4);
     tableBody.appendChild(tr);
   });
+  const paginationUL = document.getElementById("paginationUL");
+  for (let i = 1; i <= totalPages; i++) {
+    const li = document.createElement("li");
+    const a = document.createElement("a");
+    li.setAttribute("class", "page-item");
+    a.setAttribute("class", "page-link");
+    a.setAttribute("href", "#");
+    a.appendChild(document.createTextNode(i));
+    li.appendChild(a);
+    paginationUL.appendChild(li);
+    a.addEventListener("click", paginationBtn);
+  }
+}
+
+async function paginationBtn(e) {
+  try {
+    const pageNo = e.target.textContent;
+    const token = localStorage.getItem("token");
+    const result = await axios.get(
+      `http://localhost:5800/expense/getAllExpenses/${pageNo}`,
+      { headers: { Authorization: token } }
+    );
+    tableBody.innerHTML='';
+    showItems(result.data.expenses);
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 async function deleteItem(id) {
