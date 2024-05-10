@@ -36,7 +36,6 @@ const getDailyReports = async (req, res, next) => {
   } catch (error) {
     console.log(error);
   }
-  //res.send("Ok")
 };
 const getMonthlyReports = async (req, res, next) => {
   try {

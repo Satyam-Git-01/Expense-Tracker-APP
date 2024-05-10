@@ -1,8 +1,9 @@
 const path = require("path");
 const Sib = require("sib-api-v3-sdk");
 const { v4: uuidv4 } = require("uuid");
-const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
+
+const userModel = require("../models/userModel");
 const ResetPasswordModel = require("../models/resetPasswordModel");
 
 const hashedPassword = async (password) => {
@@ -18,7 +19,6 @@ const sendMail = async (req, res, next) => {
     const { email } = req.body;
     const resetId = uuidv4();
     const resetUser = await userModel.findOne({ where: { email: email } });
-    console.log(resetUser);
     if (!resetUser) {
       return res
         .status(400)
@@ -42,8 +42,9 @@ const sendMail = async (req, res, next) => {
       {
         email: email,
       },
+      //can add admin also
     ];
-    const emailResponse = await transEmailApi.sendTransacEmail({
+    await transEmailApi.sendTransacEmail({
       sender,
       To: receivers,
       subject: "Reset Password Expense Tracker APP",
@@ -64,8 +65,10 @@ const sendMail = async (req, res, next) => {
       message: "Link for reset the password is successfully send on your mail",
     });
   } catch (err) {
-    console.log(err);
-    return res.status(400).json({ success: true, message: "Shit Happened" });
+    return res.status(400).json({
+      success: false,
+      message: "Error Occurred while resetting password",
+    });
   }
 };
 
@@ -84,12 +87,12 @@ const updatePassword = async (req, res, next) => {
     });
     if (checkStatusOfRequest) {
       const userId = checkStatusOfRequest.userId;
-      const result = await ResetPasswordModel.update(
+       await ResetPasswordModel.update(
         { isActive: false },
         { where: { id: requestId } }
       );
       const newhashedPassword = await hashedPassword(newPassword);
-      const user = userModel.update(
+      await userModel.update(
         {
           password: newhashedPassword,
         },

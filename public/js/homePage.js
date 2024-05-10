@@ -3,7 +3,7 @@ const reportsLink = document.getElementById("reportsLink");
 const leaderboardLink = document.getElementById("leaderboardLink");
 const logoutBtn = document.getElementById("logoutBtn");
 
-buyPremiumButton.onclick = async function (e) {
+async function buyPremium(e) {
   const token = localStorage.getItem("token");
   const res = await axios.get(
     "http://localhost:5800/purchase/premiumMembership",
@@ -22,8 +22,6 @@ buyPremiumButton.onclick = async function (e) {
         },
         { headers: { Authorization: token } }
       );
-
-      console.log(res);
       alert(
         "Welcome to our Premium Membership, You have now access to Reports and LeaderBoard"
       );
@@ -34,24 +32,23 @@ buyPremiumButton.onclick = async function (e) {
   const rzp1 = new Razorpay(options);
   rzp1.open();
   e.preventDefault();
-};
+}
 async function addExpense(event) {
   event.preventDefault();
   const amount = event.target.amount.value;
   const description = event.target.description.value;
   const category = event.target.category.value;
   const token = localStorage.getItem("token");
+
+  //Storing Date
   const currentDate = new Date();
   const day = currentDate.getDate();
   const month = currentDate.getMonth() + 1;
   const year = currentDate.getFullYear();
-
-  // add leading zeros to day and month if needed
   const formattedDay = day < 10 ? `0${day}` : day;
   const formattedMonth = month < 10 ? `0${month}` : month;
-
-  // create the date string in date-month-year format
   const date = `${formattedDay}-${formattedMonth}-${year}`;
+
   const expenseData = {
     date,
     amount,
@@ -74,17 +71,22 @@ async function addExpense(event) {
 
 async function getAllExpenses() {
   try {
+    const token = localStorage.getItem("token");
     const data = await axios.get(
-      "http://localhost:5800/expense/getAllExpenses"
+      "http://localhost:5800/expense/getAllExpenses",
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
     );
     showItems(data.data.result);
-    console.log(data.data.result);
   } catch (err) {
     console.log(err);
   }
 }
 
-async function logout() {
+function logout() {
   try {
     localStorage.clear();
     window.location.href = "/";
@@ -93,22 +95,34 @@ async function logout() {
   }
 }
 
+const premiumMessage = () => {
+  alert("You are already a Premium Member");
+};
+
+const nonPremiumMessage = () => {
+  alert("Buy Premium to access this feature!");
+};
+
 async function isPremiumUser() {
-  const token = localStorage.getItem("token");
-  const res = await axios.get("http://localhost:5800/user/isPremiumUser", {
-    headers: { Authorization: token },
-  });
-  if (res.data.isPremiumUser) {
-    buyPremiumButton.innerHTML = "Premium Member &#9889";
-    reportsLink.innerHTML = "Report &#9889";
-    //reportsLink.removeAttribute("onclick");
-    leaderboardLink.innerHTML = "Leaderboard &#9889";
-    //leaderboardLink.removeAttribute("onclick");
-    // leaderboardLink.setAttribute("href", "/premium/getLeaderboardPage");
-    // reportsLink.setAttribute("href", "/reports/getReportsPage");
-    buyPremiumButton.removeEventListener("click", buyPremiumButton);
-  } else {
-    //do nothing
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.get("http://localhost:5800/user/isPremiumUser", {
+      headers: { Authorization: token },
+    });
+    if (res.data.isPremiumUser) {
+      buyPremiumButton.innerHTML = "Premium Member &#9889";
+      reportsLink.innerHTML = "Report &#9889";
+      leaderboardLink.innerHTML = "Leaderboard &#9889";
+      reportsLink.removeEventListener('click',nonPremiumMessage)
+      leaderboardLink.removeEventListener('click',nonPremiumMessage)
+      buyPremiumButton.removeEventListener("click", buyPremium);
+      buyPremiumButton.style.backgroundColor = "#7fff00";
+      leaderboardLink.setAttribute("href", "/premium/getLeaderBoardPage");
+      reportsLink.addEventListener("click", getExpenses);
+      buyPremiumButton.addEventListener("click", premiumMessage);
+    } 
+  } catch (err) {
+    console.log(err)
   }
 }
 
@@ -125,9 +139,6 @@ function showItems(data) {
     td1.innerHTML = `<span class="badge bg-primary rounded-pill">${item.amount} &#8377</span>`;
     td2.innerHTML = `${item.description}`;
     td3.innerHTML = `<div> <button class='btn btn-danger' onclick=deleteItem(${item.id})>Delete</button>  <button class='btn btn-dark'>Edit</button></div>`;
-    // li.classList.add('list-group-item')
-    // li.innerHTML = `<span class="badge bg-primary rounded-pill">${item.amount} &#8377</span> ${item.description} <div> <button class='btn btn-danger' onclick=deleteItem(${item.id})>Delete</button>  <button class='btn btn-dark'>Edit</button></div>`;
-    // list.append(li);
     tr.appendChild(th);
     tr.appendChild(td1);
     tr.appendChild(td2);
@@ -146,8 +157,6 @@ async function deleteItem(id) {
     console.log(err);
   }
 }
-
-getAllExpenses();
 
 async function getLeaderBoardData() {
   try {
@@ -170,15 +179,18 @@ async function getExpenses() {
         headers: { Authorization: token },
       }
     );
-    let a = document.createElement("a");
-    a.href = `${result.data.fileURL}`;
-    a.download = "expense.txt";
-    a.click();
+    let linkOfDownload = document.createElement("a");
+    linkOfDownload.href = `${result.data.fileURL}`;
+    linkOfDownload.download = "expense.txt";
+    linkOfDownload.click();
   } catch (err) {
     console.log(err);
   }
 }
-reportsLink.addEventListener("click", getExpenses);
 
 document.addEventListener("DOMContentLoaded", isPremiumUser);
+document.addEventListener("DOMContentLoaded", getAllExpenses);
 logoutBtn.addEventListener("click", logout);
+buyPremiumButton.addEventListener("click", buyPremium);
+reportsLink.addEventListener('click',nonPremiumMessage);
+leaderboardLink.addEventListener('click',nonPremiumMessage)

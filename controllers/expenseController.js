@@ -1,67 +1,55 @@
 const path = require("path");
+const sequelize = require("../utils/dbConn");
+const { uploadTos3 } = require("../services/S3Services");
+
 const expenseModel = require("../models/expenseModel");
 const userModel = require("../models/userModel");
-const sequelize = require("../utils/dbConn");
 const fileDownloadedModel = require("../models/fileDownloadedModel");
-const AWS = require("aws-sdk");
-const getHomePage = async (req, res, next) => {
+
+const getHomePage = (req, res, next) => {
   res.sendFile(path.join(__dirname, "../", "public", "views", "homepage.html"));
 };
+
 const getAllExpenses = async (req, res, next) => {
   try {
-    const result = await expenseModel.findAll();
-    return res.status(200).json({ success: true, result: result });
+    const userId = req.user.id;
+    const expenses = await expenseModel.findAll({
+      where: {
+        userId: userId,
+      },
+    });
+    return res.status(200).json({ success: true, result: expenses });
   } catch (err) {
-    console.log(err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Error While Getting Data" });
+    return res.status(500).json({
+      success: false,
+      message: "Can not get All Expenses at this moment",
+    });
   }
 };
 
-const uploadTos3 = async (data, fileName) => {
-  const BUCKET_NAME = process.env.AWS_BUCKET_NAME;
-  const AWS_ACCESS_KEY = process.env.AWS_ACCESS_KEY;
-  const AWS_SECRET_KEY = process.env.AWS_SECRET_KEY;
-
-  let s3bucket = new AWS.S3({
-    accessKeyId: AWS_ACCESS_KEY,
-    secretAccessKey: AWS_SECRET_KEY,
-  });
-
-  let params = {
-    Bucket: BUCKET_NAME,
-    Key: fileName,
-    Body: data,
-    ACL: "public-read",
-  };
-  return new Promise((resolve, reject) => {
-    s3bucket.upload(params, (err, s3response) => {
-      if (err) {
-        console.log(err);
-        reject(err);
-      } else {
-        console.log(s3response);
-        resolve(s3response.Location);
-      }
+const downloadExpenseReport = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const expenses = await getExpenses(userId);
+    const stringifiedData = JSON.stringify(expenses);
+    const fileName = `Expense-${req.user.id}/${new Date()}.txt`;
+    const fileURL = await uploadTos3(stringifiedData, fileName);
+    const result = await fileDownloadedModel.create({
+      url: fileURL,
+      userId: userId,
     });
-  });
+    return res.status(200).json({ success: true, fileURL: fileURL });
+  } catch (err) {
+    console.log(err)
+    return res.status(500).json({ success: false, fileURL: null });
+  }
 };
 
-const downloadExpense = async (req, res, next) => {
-  const data = await getExpenses(req.user.id);
-  console.log(data);
-  const strinfiiedData = JSON.stringify(data);
-  const fileName = `Expense-${req.user.id}/${new Date()}.txt`;
-  const fileURL = await uploadTos3(strinfiiedData, fileName);
-  const result = await fileDownloadedModel.create({
-    url: fileURL,
-    userId: req.user.id,
-  });
-  console.log(result);
-  return res.status(200).json({ success: true, fileURL: fileURL });
-};
-
+/**
+ * @description get all expenses of a given userId
+ * @param {*} userId
+ * @returns
+ */
 const getExpenses = async (userId) => {
   try {
     const data = await expenseModel.findAll({
@@ -71,29 +59,28 @@ const getExpenses = async (userId) => {
     });
     return data;
   } catch (err) {
-    console.log(err);
-    //return res.send(500).json({ error: "ErrorF" });
+    return null;
   }
-  return -1;
 };
 
 const addExpense = async (req, res, next) => {
-  const { date, amount, description, category } = req.body;
   const trans = await sequelize.transaction();
-  console.log(req.user);
   try {
+    let previousTotalExpenses = req.user.totalExpenses;
+    const userId = req.user.id;
+    const { date, amount, description, category } = req.body;
     await userModel.update(
       {
-        totalExpenses: req.user.totalExpenses + Number(amount),
+        totalExpenses: Number(previousTotalExpenses) + Number(amount),
       },
       {
         where: {
-          id: req.user.id,
+          id: userId,
         },
       },
       { transaction: trans }
     );
-    const result = await expenseModel.create(
+    await expenseModel.create(
       {
         date,
         amount,
@@ -110,17 +97,21 @@ const addExpense = async (req, res, next) => {
   } catch (err) {
     await trans.rollback();
     console.log(err);
+    return res
+      .json(400)
+      .json({ success: false, message: "Error while adding Expense" });
   }
-  return res
-    .json(400)
-    .json({ success: false, message: "Error while adding Expense" });
 };
 
 const deleteExpense = async (req, res, next) => {
-  console.log(req.params.id);
-  const result = expenseModel.destroy({ where: { id: req.params.id } });
-  console.log(result);
-  res.status(200).json({ success: true, message: "Deleted" });
+  try {
+    await expenseModel.destroy({ where: { id: req.params.id } });
+    res.status(200).json({ success: true, message: "Deleted" });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Error While Deleting Expense" });
+  }
 };
 module.exports = {
   getAllExpenses,
@@ -128,5 +119,5 @@ module.exports = {
   addExpense,
   getExpenses,
   deleteExpense,
-  downloadExpense,
+  downloadExpenseReport,
 };

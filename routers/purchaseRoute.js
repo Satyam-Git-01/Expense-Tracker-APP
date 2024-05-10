@@ -1,17 +1,16 @@
 const express = require("express");
 const authenticatemiddleware = require("../middlewares/auth");
-
 const {
   updateTransactionStatus,
   purchasePremium,
 } = require("../controllers/purchaseMembershipController");
 
-const router = express.Router();
-router.get("/premiumMembership", authenticatemiddleware, purchasePremium);
-router.post(
+const purchaseRoute = express.Router();
+purchaseRoute.get("/premiumMembership", authenticatemiddleware, purchasePremium);
+purchaseRoute.post(
   "/updateTransactionStatus",
   authenticatemiddleware,
   updateTransactionStatus
 );
 
-module.exports = router;
+module.exports = purchaseRoute;

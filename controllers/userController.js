@@ -10,16 +10,13 @@ const sequelize = require("../utils/dbConn");
  * @returns {*} A Token For User
  */
 const generateAccessToken = (id, email) => {
-  /*Sign method's first argument is a response that will get returned 
-    if verify successfully
-  */
   return jwt.sign({ userId: id }, process.env.JWT_TOKEN);
 };
 /**
- * 
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ *
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
  * @description return the response of creation of user
  */
 const handleSignUp = async (req, res, next) => {
@@ -42,7 +39,7 @@ const handleSignUp = async (req, res, next) => {
     await transaction.rollback();
     if (err.errors[0].type === "unique violation") {
       return res
-        .status(500)
+        .status(400)
         .json({ success: false, message: "User Already Exists." });
     } else {
       return res.status(500).json({
@@ -53,21 +50,22 @@ const handleSignUp = async (req, res, next) => {
   }
 };
 /**
- * 
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ *
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
  * @description Handles the Login of an user and return token to be used if successfull
  */
 const handleLogin = async (req, res, next) => {
   const { email, password } = req.body;
-  console.log(req.body);
   try {
     const user = await userModel.findOne({ where: { email: email } });
     bcrypt.compare(password, user.password, (err, result) => {
       if (err) {
         console.log(err);
-        return res.status(400).json({ sucess: false, message: "Error Occured" });
+        return res
+          .status(400)
+          .json({ sucess: false, message: "Error Occured" });
       } else if (result == true) {
         return res.status(200).json({
           success: true,
@@ -81,40 +79,36 @@ const handleLogin = async (req, res, next) => {
       }
     });
   } catch (err) {
-    console.log(err);
-    res.send(500);
+    return res.status(500).json({ success: false, message: "Can not login" });
   }
 };
 /**
- * 
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
- * @description Serve the static login.html 
+ *
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ * @description Serve the static login.html
  */
 const handleLoginPage = (req, res, next) => {
-  try {
     res.sendFile(path.join(__dirname, "../", "public", "views", "login.html"));
-  } catch (error) {
-    console.log(error);
-  }
 };
 /**
- * 
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ *
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
  * @description Checks if the user is premium Member or not
  */
 const isPremiumUser = async (req, res, next) => {
   try {
-    const user = await userModel.findOne({ where: { id: req.user.id} ,attributes:['isPremiumUser']});
-    console.log(user)
+    const user = await userModel.findOne({
+      where: { id: req.user.id },
+      attributes: ["isPremiumUser"],
+    });
     if (user.isPremiumUser === true) {
       return res.status(200).send(user);
     }
   } catch (err) {
-    console.log(err);
     return res.status(500).json({ success: false, message: "Error" });
   }
 };

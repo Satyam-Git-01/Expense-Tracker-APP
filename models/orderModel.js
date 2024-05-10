@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../utils/dbConn");
-const OrderModel = sequelize.define("order", {
+
+const OrderModel = sequelize.define("orders", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,

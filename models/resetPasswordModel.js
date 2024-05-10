@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../utils/dbConn");
 
-const ResetPasswordModel = sequelize.define("ResetPassword", {
+const ResetPasswordModel = sequelize.define("resetPasswords", {
   id: {
     type: Sequelize.STRING,
     primaryKey: true,

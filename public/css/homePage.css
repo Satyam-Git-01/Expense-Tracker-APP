@@ -30,6 +30,9 @@ form {
 label{
   margin-bottom: 8px;
 }
+.disabled{
+  background-color: chartreuse;
+}
 /* 293241 dark
   3d5a80 blue
   98c1d9 light

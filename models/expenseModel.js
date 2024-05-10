@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../utils/dbConn");
 
-const expenseModel = sequelize.define("expenses", {
+const ExpenseModel = sequelize.define("expenses", {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,
@@ -16,4 +16,4 @@ const expenseModel = sequelize.define("expenses", {
   category: Sequelize.STRING,
 });
 
-module.exports = expenseModel;
+module.exports = ExpenseModel;
