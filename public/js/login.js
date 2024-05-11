@@ -20,7 +20,7 @@ function login() {
     password: loginPassword.value,
   };
   axios
-    .post("http://localhost:5800/user/login", loginDetails)
+    .post("http://13.53.97.38:5800/user/login", loginDetails)
     .then((result) => {
       console.log(result);
       localStorage.setItem("token", result.data.token);

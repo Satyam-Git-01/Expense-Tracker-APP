@@ -3,7 +3,7 @@ async function getDowloadedReportsData() {
   try {
     const token = localStorage.getItem("token");
     const result = axios.get(
-      "http://localhost:5800/premium/getDownloadedReportsData",
+      "http://13.53.97.38:5800/premium/getDownloadedReportsData",
       {
         headers: {
           Authorization: token,
@@ -41,7 +41,7 @@ async function getExpenses() {
   try {
     const token = localStorage.getItem("token");
     const result = await axios.get(
-      "http://localhost:5800/expense/downloadExpenses",
+      "http://13.53.97.38:5800/expense/downloadExpenses",
       {
         headers: { Authorization: token },
       }

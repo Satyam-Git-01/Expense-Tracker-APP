@@ -6,7 +6,7 @@ const logoutBtn = document.getElementById("logoutBtn");
 async function buyPremium(e) {
   const token = localStorage.getItem("token");
   const res = await axios.get(
-    "http://localhost:5800/purchase/premiumMembership",
+    "http://13.53.97.38:5800/purchase/premiumMembership",
     { headers: { Authorization: token } }
   );
   var options = {
@@ -15,7 +15,7 @@ async function buyPremium(e) {
     // This handler function will handle the success payment
     handler: async function (response) {
       const res = await axios.post(
-        "http://localhost:5800/purchase/updateTransactionStatus",
+        "http://13.53.97.38:5800/purchase/updateTransactionStatus",
         {
           order_id: options.order_id,
           payment_id: response.razorpay_payment_id,
@@ -58,7 +58,7 @@ async function addExpense(event) {
   };
   try {
     const result = await axios.post(
-      "http://localhost:5800/expense/addExpense",
+      "http://13.53.97.38:5800/expense/addExpense",
       expenseData,
       { headers: { Authorization: token } }
     );
@@ -73,7 +73,7 @@ async function getAllExpenses() {
   try {
     const token = localStorage.getItem("token");
     const data = await axios.get(
-      "http://localhost:5800/expense/getAllExpenses/1",
+      "http://13.53.97.38:5800/expense/getAllExpenses/1",
       {
         headers: {
           Authorization: token,
@@ -107,7 +107,7 @@ const nonPremiumMessage = () => {
 async function isPremiumUser() {
   try {
     const token = localStorage.getItem("token");
-    const res = await axios.get("http://localhost:5800/user/isPremiumUser", {
+    const res = await axios.get("http://13.53.97.38:5800/user/isPremiumUser", {
       headers: { Authorization: token },
     });
     if (res.data.isPremiumUser) {
@@ -168,7 +168,7 @@ async function paginationBtn(e) {
     const pageNo = e.target.textContent;
     const token = localStorage.getItem("token");
     const result = await axios.get(
-      `http://localhost:5800/expense/getAllExpenses/${pageNo}`,
+      `http://13.53.97.38:5800/expense/getAllExpenses/${pageNo}`,
       { headers: { Authorization: token } }
     );
     tableBody.innerHTML='';
@@ -182,7 +182,7 @@ async function deleteItem(id) {
   try {
     const token = localStorage.getItem("token");
     const result = await axios.delete(
-      `http://localhost:5800/expense/delete/${id}`,
+      `http://13.53.97.38:5800/expense/delete/${id}`,
       {
         headers: {
           Authorization: token,
@@ -198,7 +198,7 @@ async function deleteItem(id) {
 async function getLeaderBoardData() {
   try {
     const result = axios.get(
-      "http://localhost:5800/premium/getLeaderBoardData"
+      "http://13.53.97.38:5800/premium/getLeaderBoardData"
     );
     const data = await result;
     console.log(data);

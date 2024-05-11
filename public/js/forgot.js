@@ -4,7 +4,7 @@ async function forgotPasswordSendMail(event) {
   try {
     const email = event.target.email.value;
     const result = await axios.post(
-      "http://localhost:5800/password/sendResetPasswordMail",
+      "http://13.53.97.38:5800/password/sendResetPasswordMail",
       { email }
     );
     alert('Email has been Sent to your email id please check spam folder too.')

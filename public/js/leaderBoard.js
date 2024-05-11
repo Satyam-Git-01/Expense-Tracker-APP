@@ -1,7 +1,7 @@
 async function getLeaderBoardData() {
   try {
     const result = axios.get(
-      "http://localhost:5800/premium/getLeaderBoardData"
+      "http://13.53.97.38:5800/premium/getLeaderBoardData"
     );
     const data = await result;
     console.log(data);
