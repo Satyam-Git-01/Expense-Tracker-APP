@@ -47,6 +47,8 @@ User.hasMany(ResetPassword);
 User.hasMany(FileDownloaded);
 FileDownloaded.belongsTo(User);
 
+console.log('New Branch Added')
+
 //Syncing Sequelize and listening to Port
 sequelize
   .sync()
