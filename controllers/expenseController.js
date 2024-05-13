@@ -158,6 +158,37 @@ const deleteExpense = async (req, res, next) => {
       .json({ success: false, message: "Error While Deleting Expense" });
   }
 };
+const editExpense = async (req, res, next) => {
+  try {
+    const id = req.params.id;
+    const category = req.body.category;
+    const description = req.body.description;
+    const amount = req.body.amount;
+    const expense = await expenseModel.findByPk(id);
+    await userModel.update(
+      {
+        totalExpenses:
+          Number(req.user.totalExpenses) -
+          Number(expense.amount) +
+          Number(amount),
+      },
+      { where: { id: req.user.id } }
+    );
+
+    await expenseModel.update(
+      {
+        category: category,
+        description: description,
+        amount: amount,
+      },
+      { where: { id: id, userId: req.user.id } }
+    );
+
+    res.redirect("/expense");
+  } catch (err) {
+    console.log(err);
+  }
+};
 module.exports = {
   getAllExpenses,
   getHomePage,
@@ -165,5 +196,6 @@ module.exports = {
   getExpenses,
   deleteExpense,
   downloadExpenseReport,
-  getAllExpensesforPagination
+  getAllExpensesforPagination,
+  editExpense,
 };

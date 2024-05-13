@@ -91,6 +91,11 @@
     function onClickAlert() {
       alert("Buy Premium to access this feature.");
     }
+    const logoutBtn = document.getElementById('logoutBtn');
+    logoutBtn.addEventListener('click',()=>{
+      localStorage.removeItem('token');
+      window.location.href='/';
+    })
   </script>
 
 </body>
