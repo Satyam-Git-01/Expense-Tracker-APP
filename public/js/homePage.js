@@ -140,8 +140,8 @@ function showItems(data, totalPages) {
     const td4 = document.createElement("td");
     td1.innerHTML = `<span class="badge bg-primary rounded-pill">${item.amount} &#8377</span>`;
     td2.innerHTML = `${item.description}`;
-    td3.innerHTML=`${item.category}`
-    td4.innerHTML = `<div> <button class='btn btn-danger' onclick=deleteItem(${item.id})>Delete</button>  <button class='btn btn-dark'>Edit</button></div>`;
+    td3.innerHTML = `${item.category}`;
+    td4.innerHTML = `<div> <button class='btn btn-danger' onclick=deleteItem(${item.id})>Delete</button>  <button class='btn btn-dark' onclick=editExpense(event,${item.id})>Edit</button></div>`;
     tr.appendChild(th);
     tr.appendChild(td1);
     tr.appendChild(td2);
@@ -162,7 +162,51 @@ function showItems(data, totalPages) {
     a.addEventListener("click", paginationBtn);
   }
 }
-
+async function editExpense(event, id) {
+  try {
+    const token = localStorage.getItem("token");
+    const amount = document.getElementById("amount");
+    const description = document.getElementById("description");
+    const category = document.getElementById("category");
+    const addExpenseBtn = document.getElementById("addbtn");
+    const addForm = document.getElementById('addForm')
+    const allExpenses = await axios.get(
+      "http://localhost:5800/expense/getAllExpenses",
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+    const expensetoEdit = allExpenses.data.result.filter(
+      (item) => item.id === id
+    )[0];
+    amount.value = expensetoEdit.amount;
+    description.value = expensetoEdit.description;
+    //addExpenseBtn.removeEventListener('click',addExpense);
+    addExpenseBtn.textContent = "Update";
+    addForm.removeAttribute('onsubmit');
+    
+    addExpenseBtn.addEventListener("click", async function update(e) {
+      e.preventDefault();
+      //console.log("request to backend for edit");
+      const res = await axios.post(
+        `http://localhost:5800/expense/editExpense/${id}`,
+        {
+          amount:amount.value,
+          description:description.value,
+          category:category.value
+        },
+        { headers: { Authorization: token } }
+      );
+      window.location.reload();
+      console.log("Reached the call")
+    });
+    //console.log(expensetoEdit);
+  } catch (err) {
+    console.log("Reached");
+  }
+}
 async function paginationBtn(e) {
   try {
     const pageNo = e.target.textContent;
@@ -171,7 +215,7 @@ async function paginationBtn(e) {
       `http://13.53.97.38:5800/expense/getAllExpenses/${pageNo}`,
       { headers: { Authorization: token } }
     );
-    tableBody.innerHTML='';
+    tableBody.innerHTML = "";
     showItems(result.data.expenses);
   } catch (err) {
     console.log(err);

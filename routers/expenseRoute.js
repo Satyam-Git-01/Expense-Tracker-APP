@@ -7,6 +7,7 @@ const {
   deleteExpense,
   downloadExpenseReport,
   getAllExpensesforPagination,
+  editExpense
 } = require("../controllers/expenseController");
 const expenseRoute = express.Router();
 
@@ -16,4 +17,5 @@ expenseRoute.get('/getAllExpenses/:page',authentication,getAllExpensesforPaginat
 expenseRoute.post("/addExpense", authentication, addExpense);
 expenseRoute.delete("/delete/:id",authentication, deleteExpense);
 expenseRoute.get("/downloadExpenses", authentication, downloadExpenseReport);
+expenseRoute.post("/editExpense/:id",authentication,editExpense);
 module.exports = expenseRoute;
