@@ -171,7 +171,7 @@ async function editExpense(event, id) {
     const addExpenseBtn = document.getElementById("addbtn");
     const addForm = document.getElementById('addForm')
     const allExpenses = await axios.get(
-      "http://localhost:5800/expense/getAllExpenses",
+      "http://13.53.97.38:5800/expense/getAllExpenses",
       {
         headers: {
           Authorization: token,
@@ -183,15 +183,12 @@ async function editExpense(event, id) {
     )[0];
     amount.value = expensetoEdit.amount;
     description.value = expensetoEdit.description;
-    //addExpenseBtn.removeEventListener('click',addExpense);
     addExpenseBtn.textContent = "Update";
     addForm.removeAttribute('onsubmit');
-    
     addExpenseBtn.addEventListener("click", async function update(e) {
       e.preventDefault();
-      //console.log("request to backend for edit");
       const res = await axios.post(
-        `http://localhost:5800/expense/editExpense/${id}`,
+        `http://13.53.97.38:5800/expense/editExpense/${id}`,
         {
           amount:amount.value,
           description:description.value,
@@ -200,9 +197,7 @@ async function editExpense(event, id) {
         { headers: { Authorization: token } }
       );
       window.location.reload();
-      console.log("Reached the call")
     });
-    //console.log(expensetoEdit);
   } catch (err) {
     console.log("Reached");
   }
